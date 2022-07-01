@@ -1,0 +1,15 @@
+#ifndef _TYPEDEF_
+#define _TYPEDEF_
+
+typedef unsigned char  byte;
+typedef unsigned short word;
+typedef unsigned long  dword;
+typedef __xdata char   xchar;
+typedef __xdata byte   xbyte;
+typedef __xdata word   xword;
+typedef __xdata int    xint;
+typedef __xdata long   xlong;
+typedef __xdata dword  xdword;
+
+
+#endif

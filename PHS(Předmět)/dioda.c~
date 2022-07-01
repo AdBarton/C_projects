@@ -1,0 +1,86 @@
+#define _TIMER 0
+
+#include <stdio.h>
+#include "typy.h"
+
+#define LED_R P4_2
+#define LED_Y P4_3
+#define LED_G P4_4
+#define Tlac1 P3_2
+#define Tlac2 P3_3
+#define REPRO P3_6
+
+define TPER (-10000)
+define N_TICKS 167
+
+if _TIMER==0
+#define _TL TL0
+#define _TH TH0
+#define _TF TF0
+#define _TR TR0
+#define _TMOD 0b00000001
+#define _IE 0b10000010
+#define _INTA 1
+else
+#define _TL TL1
+#define _TH TH1
+#define _TF TF1
+#define _TR TR1
+#define _TMOD 0b00010000
+#define _IE 0b10001000
+#define _INTA 3
+endif
+
+void LBarInit(void);
+void LedBar(word);
+void LcdInit(void);
+
+byte cnt_ticks=0;
+word diody;
+
+void TimerInit()
+{
+
+}
+
+void main(void) 
+{
+  LBarInit();
+  LcdInit();
+  printf("Blikani LED\nStart: TL1");
+  TMOD=_TMOD;
+  IE = _IE;
+
+  LedBar(diody=0x155);
+  while(1)
+  {
+	if(!Tlac2 && _TR)
+	{
+	  _TR = 0;
+	  printf("\nBlikani LED\nStart: TL1");
+	}
+	if(!Tlac1 && !_TR)
+	{
+	  _TL = (byte)TPER;
+	  _TH = (word)TPER >> 8;
+	  _TR = 1;
+	  _TF = 0;
+	  printf("\nBlikani LED\nStop: TL2");
+	}
+
+  }
+}
+
+void IntAkce(void) __interrupt _INTA
+{
+   _TL = (byte)TPER;
+   _TH = (word)TPER >> 8;
+   if(++cnt_ticks==N_TICKS)
+   {
+		cnt_ticks=0;
+		LED_R =!LED_R;
+//		diody^=1;
+//		diody^=0x3FF;
+//		LedBar(diody);
+   }
+}
